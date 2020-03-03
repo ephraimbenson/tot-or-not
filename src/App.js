@@ -82,7 +82,8 @@ class App extends Component {
         } else {
             this.setState({
                 selectedLocationID: chosen.id,
-                selectedLocation: chosen
+                selectedLocation: chosen,
+                selectedMeal: null
             })
         }
     }
