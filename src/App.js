@@ -107,7 +107,7 @@ class App extends Component {
                 <h3 className="Selection-header" hidden={!this.state.chosenDHall}>Select Meal:</h3>
                 {mealButtons}
                 
-                <h4 className="Selection-header" hidden={!resultReady}>Result:</h4>
+                <h3 className="Selection-header" hidden={!resultReady}>Result:</h3>
                 <p className="Result" hidden={!resultReady}>{hotTots ? "Tots!" : "No tots. Sorry!"}</p>
             </div>   
         )
@@ -115,7 +115,7 @@ class App extends Component {
         return (
             <div className="App">
                 <header className="App-header">Tot or Not</header>
-                {this.state.loadingMenu ? "Loading..." : interfaceElements}
+                {this.state.loadingMenu ? <h3 className="Selection-header">Loading...</h3> : interfaceElements}
             </div>
         );
     }
