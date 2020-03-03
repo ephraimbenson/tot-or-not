@@ -78,21 +78,12 @@ class App extends Component {
         })
     }
 
-    index(mealName) {
-        return this.state.totData
-    }
-
-    getMealButtonsForIndex() {
-
-    }
-
     render() {
         const diningHallButtons = this.state.totData.map(hall => {
             return (
                 <button key={hall.id} onClick={() => this.handleDiningHallButton(hall)}>{hall.location}</button>
             )
         });
-
         
         let mealButtons
         if (this.state.chosenDHall) {
@@ -108,10 +99,8 @@ class App extends Component {
             hotTots = this.state.chosenDHall.tots[index]
         }
 
-        return (
-            <div className="App">
-                <header className="App-header">Tater Tot or Not</header>
-
+        let interfaceElements = (     
+            <div>
                 <h3 className="Selection-header">Select Dining Hall:</h3>                
                 {diningHallButtons}                
 
@@ -119,10 +108,14 @@ class App extends Component {
                 {mealButtons}
                 
                 <h4 className="Selection-header" hidden={!resultReady}>Result:</h4>
-                <p hidden={!resultReady}>{hotTots ? "Tots!" : "No tots. Sorry!"}</p>
+                <p className="Result" hidden={!resultReady}>{hotTots ? "Tots!" : "No tots. Sorry!"}</p>
+            </div>   
+        )
 
-                {/* {this.state.loadingMenu ? "Loading..." : diningOptionComponents} */}
-
+        return (
+            <div className="App">
+                <header className="App-header">Tot or Not</header>
+                {this.state.loadingMenu ? "Loading..." : interfaceElements}
             </div>
         );
     }
