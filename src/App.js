@@ -1,15 +1,13 @@
 // App.js
 // Written by Ephraim Benson on 03/03/2020
 
-
+// Will Beddow Menu API's available at:
 // https://willbeddow.com/api/bonapp/v1/menu/
 // https://willbeddow.com/api/bonapp/v1/tots/
 
 import React, {Component} from 'react';
 import './App.css';
-import sampleData from './SampleData'
-import LocationButton from './Components/LocationButton'
-import MealButton from './Components/MealButton'
+// import sampleData from './SampleData'
 
 function substringPresentInStringArray(substr, arr) {
     for (const i in arr) {
@@ -41,7 +39,6 @@ function parseMenu(menu) {
         });
         idNum = idNum + 1;
     }
-    // console.log(totsData);
     return totsData;
 }
 
@@ -52,10 +49,10 @@ class App extends Component {
             loadingMenu: false,
             totData: [],
             // totData: sampleData,
+            selectedLocationID: null,
             selectedLocation: null,
-            selectedMeal: null
+            selectedMeal: null,
         }
-
         this.handleDiningHallButton = this.handleDiningHallButton.bind(this)
         this.handleMealButton = this.handleMealButton.bind(this)
     }
@@ -73,37 +70,56 @@ class App extends Component {
     }
     
     // Button Functions
-    handleDiningHallButton(diningHall) {
-        this.setState({
-            selectedLocation: diningHall
-        })
+    handleDiningHallButton(chosen) {
+        const alreadySelected = (this.state.selectedLocationID === chosen.id)
+
+        if (alreadySelected) {
+            this.setState({
+                selectedLocationID: null,
+                selectedLocation: null,
+                selectedMeal: null
+            })
+        } else {
+            this.setState({
+                selectedLocationID: chosen.id,
+                selectedLocation: chosen
+            })
+        }
     }
     handleMealButton(meal) {
-        this.setState({
-            selectedMeal: meal
-        })
+        if (meal === this.state.selectedMeal) {
+            this.setState({
+                selectedMeal: null
+            })
+        } else {
+            this.setState({
+                selectedMeal: meal
+            })
+        }
     }
 
     render() {
         const diningHallButtons = this.state.totData.map(hall => {
+            const active = (this.state.selectedLocationID === this.state.totData.indexOf(hall))
             return (
-                <LocationButton
-                    locationObject={hall}
-                    handleDiningHallButton={this.handleDiningHallButton}
+                <button
+                    className = {active ? "button-active" : "button"}
+                    onClick = {() => this.handleDiningHallButton(hall)}
                     key = {hall.id}
-                />
+                >{hall.location}</button>
             )
         });
         
         let mealButtons
         if (this.state.selectedLocation) {
             mealButtons = this.state.selectedLocation.meals.map(meal => {
+                const active = (meal === this.state.selectedMeal)
                 return (
-                    <MealButton 
-                        meal={meal}
-                        handleMealButton={this.handleMealButton}
-                        key={meal}
-                    />
+                    <button
+                        className = {active ? "button-active" : "button"}
+                        onClick = {() => this.handleMealButton(meal)}
+                        key = {meal}
+                    >{meal}</button>
                 )
             })
         }
@@ -131,8 +147,7 @@ class App extends Component {
         return (
             <div className="App">
                 <header className="App-header">Tot or Not</header>
-                {/* <h3 className="Selection-header">Loading...</h3> */}
-                {this.state.loadingMenu ? <h3 className="Selection-header">Loading...</h3> : interfaceElements}
+                {this.state.loadingMenu ? <h3>Loading...</h3> : interfaceElements}
             </div>
         );
     }
