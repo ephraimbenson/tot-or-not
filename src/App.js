@@ -1,11 +1,15 @@
-/*
-https://willbeddow.com/api/bonapp/v1/menu/
-https://willbeddow.com/api/bonapp/v1/tots/
- */
+// App.js
+// Written by Ephraim Benson on 03/03/2020
+
+
+// https://willbeddow.com/api/bonapp/v1/menu/
+// https://willbeddow.com/api/bonapp/v1/tots/
 
 import React, {Component} from 'react';
 import './App.css';
 import sampleData from './SampleData'
+import LocationButton from './Components/LocationButton'
+import MealButton from './Components/MealButton'
 
 function substringPresentInStringArray(substr, arr) {
     for (const i in arr) {
@@ -37,7 +41,7 @@ function parseMenu(menu) {
         });
         idNum = idNum + 1;
     }
-    console.log(totsData);
+    // console.log(totsData);
     return totsData;
 }
 
@@ -48,9 +52,12 @@ class App extends Component {
             loadingMenu: false,
             totData: [],
             // totData: sampleData,
-            chosenDHall: null,
-            chosenMeal: null
+            selectedLocation: null,
+            selectedMeal: null
         }
+
+        this.handleDiningHallButton = this.handleDiningHallButton.bind(this)
+        this.handleMealButton = this.handleMealButton.bind(this)
     }
 
     componentDidMount() {        
@@ -65,38 +72,47 @@ class App extends Component {
             })
     }
     
-
     // Button Functions
     handleDiningHallButton(diningHall) {
         this.setState({
-            chosenDHall: diningHall
+            selectedLocation: diningHall
         })
     }
     handleMealButton(meal) {
         this.setState({
-            chosenMeal: meal
+            selectedMeal: meal
         })
     }
 
     render() {
         const diningHallButtons = this.state.totData.map(hall => {
             return (
-                <button key={hall.id} onClick={() => this.handleDiningHallButton(hall)}>{hall.location}</button>
+                <LocationButton
+                    locationObject={hall}
+                    handleDiningHallButton={this.handleDiningHallButton}
+                    key = {hall.id}
+                />
             )
         });
         
         let mealButtons
-        if (this.state.chosenDHall) {
-            mealButtons = this.state.chosenDHall.meals.map(meal => {
-                return (<button key={meal} onClick={() => this.handleMealButton(meal)}>{meal}</button>)
+        if (this.state.selectedLocation) {
+            mealButtons = this.state.selectedLocation.meals.map(meal => {
+                return (
+                    <MealButton 
+                        meal={meal}
+                        handleMealButton={this.handleMealButton}
+                        key={meal}
+                    />
+                )
             })
         }
 
         let hotTots = false
-        let resultReady = (this.state.chosenMeal && this.state.chosenDHall)
+        let resultReady = (this.state.selectedMeal && this.state.selectedLocation)
         if (resultReady) {
-            const index = this.state.chosenDHall.meals.indexOf(this.state.chosenMeal)
-            hotTots = this.state.chosenDHall.tots[index]
+            const index = this.state.selectedLocation.meals.indexOf(this.state.selectedMeal)
+            hotTots = this.state.selectedLocation.tots[index]
         }
 
         let interfaceElements = (     
@@ -104,7 +120,7 @@ class App extends Component {
                 <h3 className="Selection-header">Select Dining Hall:</h3>                
                 {diningHallButtons}                
 
-                <h3 className="Selection-header" hidden={!this.state.chosenDHall}>Select Meal:</h3>
+                <h3 className="Selection-header" hidden={!this.state.selectedLocation}>Select Meal:</h3>
                 {mealButtons}
                 
                 <h3 className="Selection-header" hidden={!resultReady}>Result:</h3>
@@ -115,6 +131,7 @@ class App extends Component {
         return (
             <div className="App">
                 <header className="App-header">Tot or Not</header>
+                {/* <h3 className="Selection-header">Loading...</h3> */}
                 {this.state.loadingMenu ? <h3 className="Selection-header">Loading...</h3> : interfaceElements}
             </div>
         );
