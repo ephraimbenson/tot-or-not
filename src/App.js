@@ -28,7 +28,7 @@ function parseMenu(menu) {
         for (const meal_name in diningHall_object) {
             currMeals.push(meal_name);
             let dishesServed = diningHall_object[meal_name];
-            let hasTots = substringPresentInStringArray("tots", dishesServed);
+            let hasTots = substringPresentInStringArray(" tots", dishesServed);
             totsAvail.push(hasTots);
         }
         totsData.push({
@@ -134,12 +134,16 @@ class App extends Component {
 
         let interfaceElements = (     
             <div>
-                <h3 className="Selection-header">Select Dining Hall:</h3>                
-                {diningHallButtons}                
+                <h3 className="Selection-header">Select Dining Hall:</h3>      
+                <div>
+                    {diningHallButtons}                
+                </div>          
 
                 <h3 className="Selection-header" hidden={!this.state.selectedLocation}>Select Meal:</h3>
-                {mealButtons}
-                
+                <div>
+                    {mealButtons}
+                </div>
+
                 <h3 className="Selection-header" hidden={!resultReady}>Result:</h3>
                 <p className="Result" hidden={!resultReady}>{hotTots ? "Tots!" : "No tots. Sorry!"}</p>
             </div>   
