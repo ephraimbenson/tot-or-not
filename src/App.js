@@ -1,22 +1,19 @@
 // App.js
-// Written by Ephraim Benson on 03/03/2020
 
-// Will Beddow Menu API's available at:
+// Menu APIs available at:
 // https://willbeddow.com/api/bonapp/v1/menu/
 // https://willbeddow.com/api/bonapp/v1/tots/
 
 import React, {Component} from 'react';
 import './App.css';
-// import sampleData from './SampleData'
 
-function substringPresentInStringArray(substr, arr) {
-    for (const i in arr) {
-        let dish = arr[i];
-        if (dish.toLowerCase().includes(substr)) {
-            return true;
+function searchStringInArray (str, strArray) {
+    for (var j=0; j<strArray.length; j++) {
+        if (strArray[j].toLowerCase().includes(str)) {
+            return j
         }
     }
-    return false;
+    return -1;
 }
 
 function parseMenu(menu) {
@@ -28,8 +25,8 @@ function parseMenu(menu) {
         for (const meal_name in diningHall_object) {
             currMeals.push(meal_name);
             let dishesServed = diningHall_object[meal_name];
-            let hasTots = substringPresentInStringArray(" tots", dishesServed);
-            totsAvail.push(hasTots);
+            let hasTots = dishesServed[searchStringInArray("tots", dishesServed)]
+            totsAvail.push(hasTots)
         }
         totsData.push({
             id: idNum,
@@ -38,7 +35,9 @@ function parseMenu(menu) {
             tots: totsAvail
         });
         idNum = idNum + 1;
+        console.log(totsAvail)
     }
+    console.log(totsData)
     return totsData;
 }
 
@@ -48,7 +47,6 @@ class App extends Component {
         this.state = {
             loadingMenu: false,
             totData: [],
-            // totData: sampleData,
             selectedLocationID: null,
             selectedLocation: null,
             selectedMeal: null,
@@ -125,7 +123,7 @@ class App extends Component {
             })
         }
 
-        let hotTots = false
+        let hotTots
         let resultReady = (this.state.selectedMeal && this.state.selectedLocation)
         if (resultReady) {
             const index = this.state.selectedLocation.meals.indexOf(this.state.selectedMeal)
@@ -145,7 +143,7 @@ class App extends Component {
                 </div>
 
                 <h3 className="Selection-header" hidden={!resultReady}>Result:</h3>
-                <p className="Result" hidden={!resultReady}>{hotTots ? "Tots!" : "No tots. Sorry!"}</p>
+                <p className="Result" hidden={!resultReady}>{hotTots ? ("Yes, " + hotTots + "!"): "Sorry, no tots here."}</p>
             </div>   
         )
 
