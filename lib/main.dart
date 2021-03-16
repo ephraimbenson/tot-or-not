@@ -5,6 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+// Tots api at https://willbeddow.com/api/bonapp/v1/tots/
+// Full menu api at https://willbeddow.com/api/bonapp/v1/menu/
+
 Future<TodaysMenu> fetchTodaysMenu() async {
   var url = Uri.https('willbeddow.com', '/api/bonapp/v1/menu/');
   final response = await http.get(url);
