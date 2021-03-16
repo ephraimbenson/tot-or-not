@@ -44,9 +44,12 @@ class TodaysMenu {
             }
           },
         );
+        if (menuObj[locationName]['meals'].isEmpty) {
+          menuObj[locationName]['meals'].add('CLOSED TODAY');
+          menuObj[locationName]['tots'].add(locationName + ' is closed. 🚫');
+        }
       },
     );
-    // print(menuObj);
     return TodaysMenu(
       theMenu: menuObj,
     );
@@ -100,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return MaterialApp(
       title: 'Tot or Not',
       theme: ThemeData(
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.deepOrange,
       ),
       home: Scaffold(
         appBar: AppBar(
@@ -166,7 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         leading: Icon(
           icon,
-          color: Colors.red,
+          color: Colors.lightBlue,
         ),
         trailing: Icon(Icons.keyboard_arrow_down),
       );
