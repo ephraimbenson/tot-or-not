@@ -1,12 +1,24 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 // Tots api at https://willbeddow.com/api/bonapp/v1/tots/
 // Full menu api at https://willbeddow.com/api/bonapp/v1/menu/
+
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1).toLowerCase()}";
+  }
+}
+
+bool stringSuggestsTots(String menuItem) {
+  if (menuItem.contains("tots") || menuItem.contains("tot ")) {
+    return true;
+  }
+  return false;
+}
 
 Future<TodaysMenu> fetchTodaysMenu() async {
   var url = Uri.https('willbeddow.com', '/api/bonapp/v1/menu/');
@@ -33,20 +45,22 @@ class TodaysMenu {
             var foundEm = false;
             for (var dish in dishList) {
               // dish = 'yummy sweet tots'; // for testing
-              if (dish.toString().toLowerCase().contains('tots')) {
-                menuObj[locationName]['tots'].add('Yes, $dish! 🤩');
+              if (stringSuggestsTots(dish.toString().toLowerCase())) {
+                dish = dish.toString().capitalize();
+                menuObj[locationName]['tots'].add('$dish! 🥔🛢️🔥');
                 foundEm = true;
                 break;
               }
             }
             if (!foundEm) {
-              menuObj[locationName]['tots'].add('Sorry, no tots. 😥');
+              menuObj[locationName]['tots'].add('No tots. 😥');
             }
           },
         );
         if (menuObj[locationName]['meals'].isEmpty) {
-          menuObj[locationName]['meals'].add('CLOSED TODAY');
-          menuObj[locationName]['tots'].add(locationName + ' is closed. 🚫');
+          menuObj[locationName]['meals']
+              .add(locationName.capitalize() + ' is closed today. 🚫');
+          menuObj[locationName]['tots'].add('Sorry!');
         }
       },
     );
@@ -148,7 +162,10 @@ class _MyHomePageState extends State<MyHomePage> {
         final tots = timesAndTots['tots'];
         // Make tiles for meals
         for (int i = 0; i < meals.length; i++) {
-          final totsPresent = tots[i].toString().toLowerCase().contains('yes,');
+          final totsPresent = tots[i]
+              .toString()
+              .toLowerCase()
+              .contains('🥔🛢️🔥'); // lol TODO: check a boolean, not emojis
           tiles.add(_mealTile(meals[i], tots[i], totsPresent));
         }
       },
