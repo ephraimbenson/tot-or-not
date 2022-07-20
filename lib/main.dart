@@ -14,7 +14,8 @@ extension StringExtension on String {
 }
 
 bool stringSuggestsTots(String menuItem) {
-  if (menuItem.contains("tots") || menuItem.contains("tot ")) {
+  if (menuItem.toLowerCase().contains("tots") ||
+      menuItem.toLowerCase().contains("tot ")) {
     return true;
   }
   return false;
@@ -45,7 +46,7 @@ class TodaysMenu {
             var foundEm = false;
             for (var dish in dishList) {
               // dish = 'yummy sweet tots'; // for testing
-              if (stringSuggestsTots(dish.toString().toLowerCase())) {
+              if (stringSuggestsTots(dish.toString())) {
                 dish = dish.toString().capitalize();
                 menuObj[locationName]['tots'].add('$dish! 🥔🛢️🔥');
                 foundEm = true;
@@ -153,7 +154,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildMenuList(menu) {
     List<ListTile> tiles = [];
-
     // Make tile for each dining hall
     menu.forEach(
       (location, timesAndTots) {
@@ -162,10 +162,8 @@ class _MyHomePageState extends State<MyHomePage> {
         final tots = timesAndTots['tots'];
         // Make tiles for meals
         for (int i = 0; i < meals.length; i++) {
-          final totsPresent = tots[i]
-              .toString()
-              .toLowerCase()
-              .contains('🥔🛢️🔥'); // lol TODO: check a boolean, not emojis
+          // Check newly generated display string for a potato emoji. That means tots!
+          final totsPresent = tots[i].toString().contains('🥔');
           tiles.add(_mealTile(meals[i], tots[i], totsPresent));
         }
       },
