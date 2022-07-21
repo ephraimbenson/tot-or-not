@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 
 // Tots api at https://willbeddow.com/api/bonapp/v1/tots/
 // Full menu api at https://willbeddow.com/api/bonapp/v1/menu/
-final Uri _url = Uri.parse('https://carleton.cafebonappetit.com/');
+final Uri _bonappUrl = Uri.parse('https://carleton.cafebonappetit.com/');
 
 extension StringExtension on String {
   String capitalize() {
@@ -108,26 +108,28 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget footer() {
     return Center(
         heightFactor: 2.5,
-        child: RichText(
-          textAlign: TextAlign.center,
-          text: TextSpan(
-            children: [
-              new TextSpan(
-                text:
-                    'Made by Ephraim Benson. Carleton College menu data available at ',
-                style: new TextStyle(color: Colors.black),
+        child: Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                children: [
+                  new TextSpan(
+                    text:
+                        'Made by Ephraim Benson. Carleton College menu data available at ',
+                    style: new TextStyle(color: Colors.black),
+                  ),
+                  new TextSpan(
+                    text: 'https://carleton.cafebonappetit.com/',
+                    style: new TextStyle(color: Colors.blue),
+                    recognizer: new TapGestureRecognizer()
+                      ..onTap = () {
+                        launchUrl(_bonappUrl);
+                      },
+                  ),
+                ],
               ),
-              new TextSpan(
-                text: 'https://carleton.cafebonappetit.com/',
-                style: new TextStyle(color: Colors.blue),
-                recognizer: new TapGestureRecognizer()
-                  ..onTap = () {
-                    launchUrl(_url);
-                  },
-              ),
-            ],
-          ),
-        ));
+            )));
   }
 
   @override
