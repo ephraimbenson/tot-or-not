@@ -85,7 +85,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Tot or Not',
-      home: MyHomePage(title: 'Tot or Not Home Page'),
+      home: MyHomePage(title: 'Tot or Not'),
+      theme: ThemeData(
+        primarySwatch: Colors.amber,
+      ),
     );
   }
 }
@@ -140,43 +143,38 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Tot or Not',
-        theme: ThemeData(
-          primarySwatch: Colors.amber,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Tot or Not',
+            style: GoogleFonts.lobster(
+              fontSize: 30,
+              fontWeight: FontWeight.w900,
+            )),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: updateMenu,
+          )
+        ],
+      ),
+      body: Center(
+        child: FutureBuilder<TodaysMenu>(
+          future: futureMenu,
+          builder: (context, snapshot) {
+            Widget availableChild = CircularProgressIndicator();
+            if (snapshot.hasData) {
+              availableChild = _buildMenuList(snapshot.data.theMenu);
+            } else if (snapshot.hasError) {
+              availableChild = Text("${snapshot.error}");
+            }
+            return Center(
+              child: availableChild,
+            );
+          },
         ),
-        home: Scaffold(
-          appBar: AppBar(
-            title: Text('Tot or Not',
-                style: GoogleFonts.lobster(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w900,
-                )),
-            actions: [
-              IconButton(
-                icon: Icon(Icons.refresh),
-                onPressed: updateMenu,
-              )
-            ],
-          ),
-          body: Center(
-            child: FutureBuilder<TodaysMenu>(
-              future: futureMenu,
-              builder: (context, snapshot) {
-                Widget availableChild = CircularProgressIndicator();
-                if (snapshot.hasData) {
-                  availableChild = _buildMenuList(snapshot.data.theMenu);
-                } else if (snapshot.hasError) {
-                  availableChild = Text("${snapshot.error}");
-                }
-                return Center(
-                  child: availableChild,
-                );
-              },
-            ),
-          ),
-          bottomSheet: footer(),
-        ));
+      ),
+      bottomSheet: footer(),
+    );
   }
 
   Widget _buildMenuList(menu) {
