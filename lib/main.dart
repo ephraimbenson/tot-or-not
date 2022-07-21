@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -44,25 +44,24 @@ class TodaysMenu {
         location.forEach(
           (event, dishList) {
             menuObj[locationName]['meals'].add(event);
-            var foundEm = false;
+            var foundTots = false;
             for (var dish in dishList) {
-              // dish = 'yummy sweet tots'; // for testing
+              // dish = 'tater tots'; // for testing
               if (stringSuggestsTots(dish.toString())) {
                 dish = dish.toString().capitalize();
-                menuObj[locationName]['tots'].add('$dish! 🥔🛢️🔥');
-                foundEm = true;
+                menuObj[locationName]['tots'].add('$dish! 🥔🔥');
+                foundTots = true;
                 break;
               }
             }
-            if (!foundEm) {
+            if (!foundTots) {
               menuObj[locationName]['tots'].add('No tots. 😥');
             }
           },
         );
         if (menuObj[locationName]['meals'].isEmpty) {
-          menuObj[locationName]['meals']
-              .add(locationName.capitalize() + ' is closed today. 🚫');
-          menuObj[locationName]['tots'].add('Sorry!');
+          menuObj[locationName]['meals'].add("Closed today");
+          menuObj[locationName]['tots'].add('');
         }
       },
     );
@@ -82,10 +81,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Tot or Not',
-      theme: ThemeData(
-        primarySwatch: Colors.red,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
       home: MyHomePage(title: 'Tot or Not Home Page'),
     );
   }
@@ -123,7 +118,11 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Tot or Not'),
+          title: Text('Tot or Not',
+              style: GoogleFonts.lobster(
+                fontSize: 30,
+                fontWeight: FontWeight.w900,
+              )),
           actions: [
             IconButton(
               icon: Icon(Icons.refresh),
@@ -136,13 +135,11 @@ class _MyHomePageState extends State<MyHomePage> {
             future: futureMenu,
             builder: (context, snapshot) {
               Widget availableChild = CircularProgressIndicator();
-
               if (snapshot.hasData) {
                 availableChild = _buildMenuList(snapshot.data.theMenu);
               } else if (snapshot.hasError) {
                 availableChild = Text("${snapshot.error}");
               }
-
               return Center(
                 child: availableChild,
               );
@@ -158,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // Make tile for each dining hall
     menu.forEach(
       (location, timesAndTots) {
-        tiles.add(_hallTile(location, Icons.restaurant));
+        tiles.add(_hallTile(location, Icons.restaurant_menu_rounded));
         final meals = timesAndTots['meals'];
         final tots = timesAndTots['tots'];
         // Make tiles for meals
@@ -178,31 +175,28 @@ class _MyHomePageState extends State<MyHomePage> {
   ListTile _hallTile(String title, IconData icon) => ListTile(
         title: Text(
           title.toUpperCase(),
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 20,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 22),
         ),
         leading: Icon(
           icon,
           color: Colors.lightBlue,
         ),
-        trailing: Icon(Icons.keyboard_arrow_down),
+        // trailing: Icon(Icons.keyboard_arrow_down),
       );
 
   ListTile _mealTile(String title, String subtitle, bool totsPresent) =>
       ListTile(
         title: Text(
           title,
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 15,
-          ),
+          style: TextStyle(fontSize: 20),
         ),
-        subtitle: Text(subtitle),
+        subtitle: subtitle.isEmpty
+            ? null
+            : Text(subtitle, style: TextStyle(fontSize: 18)),
         leading: Icon(
-          totsPresent ? Icons.check_circle : Icons.no_food,
-          color: totsPresent ? Colors.green : Colors.grey,
+          totsPresent ? Icons.check_circle : Icons.cancel_outlined,
+          color: totsPresent ? Colors.green : Colors.red,
+          size: 30,
         ),
         contentPadding: EdgeInsets.only(left: 40.0),
       );
