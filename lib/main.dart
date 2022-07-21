@@ -3,9 +3,12 @@ import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/gestures.dart';
 
 // Tots api at https://willbeddow.com/api/bonapp/v1/tots/
 // Full menu api at https://willbeddow.com/api/bonapp/v1/menu/
+final Uri _url = Uri.parse('https://carleton.cafebonappetit.com/');
 
 extension StringExtension on String {
   String capitalize() {
@@ -99,6 +102,31 @@ class _MyHomePageState extends State<MyHomePage> {
   var chosenLocation = '';
   var chosenTime = '';
 
+  Widget footer() {
+    return Center(
+        heightFactor: 2.5,
+        child: RichText(
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            children: [
+              new TextSpan(
+                text:
+                    'Built by Ephraim Benson. Carleton College menu data available at ',
+                style: new TextStyle(color: Colors.black),
+              ),
+              new TextSpan(
+                text: 'https://carleton.cafebonappetit.com/',
+                style: new TextStyle(color: Colors.blue),
+                recognizer: new TapGestureRecognizer()
+                  ..onTap = () {
+                    launchUrl(_url);
+                  },
+              ),
+            ],
+          ),
+        ));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -112,42 +140,42 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tot or Not',
-      theme: ThemeData(
-        primarySwatch: Colors.amber,
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Tot or Not',
-              style: GoogleFonts.lobster(
-                fontSize: 30,
-                fontWeight: FontWeight.w900,
-              )),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.refresh),
-              onPressed: updateMenu,
-            )
-          ],
+        title: 'Tot or Not',
+        theme: ThemeData(
+          primarySwatch: Colors.amber,
         ),
-        body: Center(
-          child: FutureBuilder<TodaysMenu>(
-            future: futureMenu,
-            builder: (context, snapshot) {
-              Widget availableChild = CircularProgressIndicator();
-              if (snapshot.hasData) {
-                availableChild = _buildMenuList(snapshot.data.theMenu);
-              } else if (snapshot.hasError) {
-                availableChild = Text("${snapshot.error}");
-              }
-              return Center(
-                child: availableChild,
-              );
-            },
+        home: Scaffold(
+          appBar: AppBar(
+            title: Text('Tot or Not',
+                style: GoogleFonts.lobster(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w900,
+                )),
+            actions: [
+              IconButton(
+                icon: Icon(Icons.refresh),
+                onPressed: updateMenu,
+              )
+            ],
           ),
-        ),
-      ),
-    );
+          body: Center(
+            child: FutureBuilder<TodaysMenu>(
+              future: futureMenu,
+              builder: (context, snapshot) {
+                Widget availableChild = CircularProgressIndicator();
+                if (snapshot.hasData) {
+                  availableChild = _buildMenuList(snapshot.data.theMenu);
+                } else if (snapshot.hasError) {
+                  availableChild = Text("${snapshot.error}");
+                }
+                return Center(
+                  child: availableChild,
+                );
+              },
+            ),
+          ),
+          bottomSheet: footer(),
+        ));
   }
 
   Widget _buildMenuList(menu) {
