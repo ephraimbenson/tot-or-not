@@ -53,7 +53,7 @@ class TodaysMenu {
               // dish = 'tater tots'; // for testing
               if (stringSuggestsTots(dish.toString())) {
                 dish = dish.toString().capitalize();
-                menuObj[locationName]['tots'].add('$dish! 🥔🔥');
+                menuObj[locationName]['tots'].add('$dish! 🔥');
                 foundTots = true;
                 break;
               }
@@ -189,8 +189,8 @@ class _MyHomePageState extends State<MyHomePage> {
         final tots = timesAndTots['tots'];
         // Make tiles for meals
         for (int i = 0; i < meals.length; i++) {
-          // Check newly generated display string for a potato emoji. That means tots!
-          final totsPresent = tots[i].toString().contains('🥔');
+          // Check newly generated display string for a fire emoji. That means tots!
+          final totsPresent = tots[i].toString().contains('🔥');
           tiles.add(_mealTile(meals[i], tots[i], totsPresent));
         }
       },
