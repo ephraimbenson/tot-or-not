@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/gestures.dart';
+import 'package:intl/intl.dart';
 
 // Tots api at https://willbeddow.com/api/bonapp/v1/tots/
 // Full menu api at https://willbeddow.com/api/bonapp/v1/menu/
@@ -103,8 +104,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<TodaysMenu> futureMenu;
-  var chosenLocation = '';
-  var chosenTime = '';
 
   Widget footer() {
     return Center(
@@ -157,21 +156,31 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
-      body: Center(
-        child: FutureBuilder<TodaysMenu>(
-          future: futureMenu,
-          builder: (context, snapshot) {
-            Widget availableChild = CircularProgressIndicator();
-            if (snapshot.hasData) {
-              availableChild = _buildMenuList(snapshot.data.theMenu);
-            } else if (snapshot.hasError) {
-              availableChild = Text("${snapshot.error}");
-            }
-            return Center(
-              child: availableChild,
-            );
-          },
-        ),
+      body: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(top: 20),
+            child: Text(
+              DateFormat.yMMMd().format(DateTime.now()),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            ),
+          ),
+          Expanded(
+              child: FutureBuilder<TodaysMenu>(
+            future: futureMenu,
+            builder: (context, snapshot) {
+              Widget availableChild = CircularProgressIndicator();
+              if (snapshot.hasData) {
+                availableChild = _buildMenuList(snapshot.data.theMenu);
+              } else if (snapshot.hasError) {
+                availableChild = Text("${snapshot.error}");
+              }
+              return Center(
+                child: availableChild,
+              );
+            },
+          ))
+        ],
       ),
       bottomSheet: footer(),
     );
