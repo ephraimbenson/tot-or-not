@@ -19,7 +19,8 @@ extension StringExtension on String {
 bool stringSuggestsTots(String menuItem) {
   if (menuItem.toLowerCase().contains("tots") ||
       menuItem.toLowerCase().contains("tot ") ||
-      menuItem.toLowerCase().contains("tater tot")) {
+      menuItem.toLowerCase().contains("tater tot") ||
+      menuItem.toLowerCase().contains(" puffs")) {
     return true;
   }
   return false;
