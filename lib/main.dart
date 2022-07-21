@@ -15,7 +15,8 @@ extension StringExtension on String {
 
 bool stringSuggestsTots(String menuItem) {
   if (menuItem.toLowerCase().contains("tots") ||
-      menuItem.toLowerCase().contains("tot ")) {
+      menuItem.toLowerCase().contains("tot ") ||
+      menuItem.toLowerCase().contains("tater tot")) {
     return true;
   }
   return false;
@@ -118,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return MaterialApp(
       title: 'Tot or Not',
       theme: ThemeData(
-        primarySwatch: Colors.deepOrange,
+        primarySwatch: Colors.amber,
       ),
       home: Scaffold(
         appBar: AppBar(
