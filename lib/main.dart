@@ -111,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               new TextSpan(
                 text:
-                    'Built by Ephraim Benson. Carleton College menu data available at ',
+                    'Made by Ephraim Benson. Carleton College menu data available at ',
                 style: new TextStyle(color: Colors.black),
               ),
               new TextSpan(
