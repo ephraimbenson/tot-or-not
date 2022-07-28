@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/gestures.dart';
+import 'package:instant/instant.dart';
 import 'package:intl/intl.dart';
 
 // Tots api at https://willbeddow.com/api/bonapp/v1/tots/
 // Full menu api at https://willbeddow.com/api/bonapp/v1/menu/
 final Uri _bonappUrl = Uri.parse('https://carleton.cafebonappetit.com/');
+DateTime northfieldMN = curDateTimeByZone(zone: "CST");
 
 extension StringExtension on String {
   String capitalize() {
@@ -163,7 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Container(
             margin: EdgeInsets.only(top: 20),
             child: Text(
-              DateFormat.yMMMd().format(DateTime.now()),
+              DateFormat.yMMMd().format(northfieldMN),
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
           ),
