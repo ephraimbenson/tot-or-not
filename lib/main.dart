@@ -8,23 +8,40 @@ import 'package:instant/instant.dart';
 import 'package:intl/intl.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart' as dom;
-
-//TODO: collapsable menu
-//TODO: tot presence highlights meal?
+import 'package:grouped_list/grouped_list.dart';
 
 final Uri _bonappUrl = Uri.parse('https://carleton.cafebonappetit.com/');
 DateTime northfieldMN = curDateTimeByZone(zone: "CST");
 
-final URL_BURTON = Uri.https(
-    'legacy.cafebonappetit.com', '/print-menu/cafe/35/menu/510645/days/today/');
-final URL_LDC = Uri.https(
-    'legacy.cafebonappetit.com', 'print-menu/cafe/36/menu/514247/days/today');
-
-const MEAL_DIVIDER_CLASS = "meal-types my-day-menu-table eni-day-menu";
+final URL_BURTON =
+    Uri.https('legacy.cafebonappetit.com', 'print-menu/cafe/35/menu');
+final URL_LDC =
+    Uri.https('legacy.cafebonappetit.com', 'print-menu/cafe/36/menu/');
+final MEAL_DIVIDER_CLASS = "meal-types my-day-menu-table eni-day-menu";
 
 extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${this.substring(1).toLowerCase()}";
+  }
+
+  String capitalizeEachWord() {
+    return this.split(' ').map((s) {
+      return s.capitalize();
+    }).join(' ');
+  }
+}
+
+extension MoveElement<T> on List<T> {
+  void move(int from, int to) {
+    RangeError.checkValidIndex(from, this, "from", length);
+    RangeError.checkValidIndex(to, this, "to", length);
+    var element = this[from];
+    if (from < to) {
+      this.setRange(from, to, this, from + 1);
+    } else {
+      this.setRange(to + 1, from + 1, this, to);
+    }
+    this[to] = element;
   }
 }
 
@@ -40,6 +57,14 @@ Map<String, List> buildMenuFromHtml(dom.Document htmlDoc) {
     var result = meal_items.map((item) {
       return item.text.trim().split(RegExp(r'\t'))[0].capitalize();
     }).toList();
+
+    for (var i = 0; i < result.length; i++) {
+      var testString = result[i];
+      if (stringSuggestsTots(testString)) {
+        result.move(i, 0);
+      }
+    }
+
     meal_map[meal_name] = result;
   }
 
@@ -79,9 +104,8 @@ class TodaysMenu {
   TodaysMenu({required this.theMenu});
 
   factory TodaysMenu.fromData(Map menuBurton, Map menuLdc) {
-    var menuObj = {'Burton': menuBurton, 'LDC': menuLdc};
     return TodaysMenu(
-      theMenu: menuObj,
+      theMenu: {'Burton': menuBurton, 'LDC': menuLdc},
     );
   }
 }
@@ -234,32 +258,26 @@ class _MyHomePageState extends State<MyHomePage>
 
   Widget _buildMenuList(menu, locationName) {
     final menuItems = menu[locationName];
-    List<ListTile> tiles = [];
-    tiles.add(_hallTile(locationName, Icons.restaurant));
+    List groupedFormat = [];
+
     menuItems.forEach((String mealName, dishes) {
-      tiles.add(_mealTile(mealName));
       dishes.forEach((String dish) {
-        tiles.add(_dishTitle(
-            dish, stringSuggestsTots(dish), Icons.restaurant_menu_rounded));
+        groupedFormat.add({'name': dish, 'group': mealName});
       });
     });
 
-    return ListView(
-      children: tiles,
+    return GroupedListView(
+      elements: groupedFormat,
+      groupBy: (element) => element['group'],
+      groupSeparatorBuilder: (String groupByValue) => _mealTile(groupByValue),
+      itemBuilder: (context, dynamic element) {
+        final itemName = element['name'];
+        return _dishTitle(itemName, stringSuggestsTots(itemName),
+            Icons.restaurant_menu_rounded);
+      },
+      useStickyGroupSeparators: true,
     );
   }
-
-  ListTile _hallTile(String name, IconData icon) => ListTile(
-        title: Text(
-          name,
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 22),
-        ),
-        leading: Icon(
-          icon,
-          color: Colors.lightBlue,
-        ),
-        // trailing: Icon(Icons.keyboard_arrow_down),
-      );
 
   ListTile _mealTile(String title) => ListTile(
         title: Text(
@@ -269,9 +287,8 @@ class _MyHomePageState extends State<MyHomePage>
         leading: Icon(
           Icons.restaurant_menu,
           color: Colors.black,
-          // size: 30,
         ),
-        contentPadding: EdgeInsets.only(left: 40.0),
+        contentPadding: EdgeInsets.only(left: 20.0),
       );
 
   ListTile _dishTitle(String title, bool totsPresent, IconData icon) =>
@@ -282,7 +299,7 @@ class _MyHomePageState extends State<MyHomePage>
               fontWeight: totsPresent ? FontWeight.w700 : FontWeight.normal,
               fontSize: 18),
         ),
-        contentPadding: EdgeInsets.only(left: 60.0),
+        contentPadding: EdgeInsets.only(left: 40.0),
         leading: Icon(
           totsPresent ? Icons.check_circle : Icons.cancel_outlined,
           color: totsPresent ? Colors.green : Colors.red,
